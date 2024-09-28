@@ -16,7 +16,7 @@ class CategoryController extends Controller
 
         return response()->json([
             "categories" => $categories,
-            
+
         ]);
     }
 
@@ -25,11 +25,8 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-         // Validar los datos recibidos
-         $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-        ]);
+        // Validar los datos recibidos
+        $this->validateCategory($request);
 
         // Crear la nueva categoría
         $category = Category::create([
@@ -49,31 +46,6 @@ class CategoryController extends Controller
      */
     public function show(string $id)
     {
-         // Buscar la categoría por id
-         $category = Category::find($id);
-
-         // Verificar si la categoría existe
-         if (!$category) {
-             return response()->json(['message' => 'Category not found'], 404);
-         }
- 
-         // Responder con los datos de la categoría
-         return response()->json([
-             'category' => $category,
-         ]);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        // Validar los datos recibidos
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-        ]);
-
         // Buscar la categoría por id
         $category = Category::find($id);
 
@@ -82,11 +54,26 @@ class CategoryController extends Controller
             return response()->json(['message' => 'Category not found'], 404);
         }
 
-        // Actualizar los datos de la categoría
-        $category->update([
-            'name' => $request->name,
-            'description' => $request->description,
+        // Responder con los datos de la categoría
+        return response()->json([
+            'category' => $category,
         ]);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, string $id)
+    {
+        
+        // Validar datos recibidos
+        $this->validateCategory($request);
+
+        // Buscar la categoria por Id
+        $category = Category::findOrFail($id);
+
+        // Actualizar los datos de la categoría
+        $category->update($request->only('name'));
 
         // Responder con la categoría actualizada
         return response()->json([
@@ -113,5 +100,12 @@ class CategoryController extends Controller
 
         // Responder con un mensaje de éxito
         return response()->json(['message' => 'Category deleted successfully!']);
+    }
+
+    private function validateCategory(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
     }
 }
