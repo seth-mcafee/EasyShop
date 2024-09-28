@@ -65,12 +65,15 @@ class CategoryController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        
         // Validar datos recibidos
         $this->validateCategory($request);
 
         // Buscar la categoria por Id
-        $category = Category::findOrFail($id);
+        $category = Category::find($id);
+
+        if (!$category) {
+            return response()->json(['message' => 'Category not found'], 404);
+        }
 
         // Actualizar los datos de la categoría
         $category->update($request->only('name'));
