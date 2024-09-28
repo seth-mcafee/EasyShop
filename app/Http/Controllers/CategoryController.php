@@ -71,6 +71,10 @@ class CategoryController extends Controller
         // Buscar la categoria por Id
         $category = Category::find($id);
 
+        if (!$category) {
+            return response()->json(['message' => 'Category not found'], 404);
+        }
+
         // Actualizar los datos de la categoría
         $category->update($request->only('name'));
 
