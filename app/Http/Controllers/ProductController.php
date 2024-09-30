@@ -47,7 +47,17 @@ class ProductController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $product = Product::find($id);
+
+        if (!$product) {
+            return response()->json([
+                "message" => "Product not found"
+            ], 404);
+        }
+
+        return response()->json([
+            "product" => $product
+        ], 200);
     }
 
     /**
@@ -55,7 +65,33 @@ class ProductController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $product = Product::find($id);
+
+        if (!$product) {
+            return response()->json([
+                "message" => "Product not found"
+            ], 404);
+        }
+
+        if ($request->hasFile("image")) {
+            // Delete old image if exists
+            if ($product->image_url) {
+                Storage::delete($product->image_url);
+            }
+
+            // Store the new image
+            $path = Storage::putFile("products", $request->file("image"));
+            $request->request->add([
+                "image_url" => $path
+            ]);
+        }
+
+        $product->update($request->all());
+
+        return response()->json([
+            "message" => "Product updated",
+            "product" => $product
+        ], 200);
     }
 
     /**
@@ -63,6 +99,23 @@ class ProductController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $product = Product::find($id);
+
+        if (!$product) {
+            return response()->json([
+                "message" => "Product not found"
+            ], 404);
+        }
+
+        // Delete the image if exists
+        if ($product->image_url) {
+            Storage::delete($product->image_url);
+        }
+
+        $product->delete();
+
+        return response()->json([
+            "message" => "Product deleted"
+        ], 200);
     }
 }
