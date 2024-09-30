@@ -15,7 +15,7 @@ class CategoryCollection extends ResourceCollection
     public function toArray(Request $request): array
     {
         return [
-            "data"=>ProductResource::collection($this->collection)
+            "data"=>CategoryResource::collection($this->collection)
         ];
     }
 }

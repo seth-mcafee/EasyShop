@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\ProductCollection;
+use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -56,7 +57,7 @@ class ProductController extends Controller
         }
 
         return response()->json([
-            "product" => $product
+            "product" => ProductResource::make($product)
         ], 200);
     }
 
@@ -89,8 +90,7 @@ class ProductController extends Controller
         $product->update($request->all());
 
         return response()->json([
-            "message" => "Product updated",
-            "product" => $product
+            "message" => "Product updated"
         ], 200);
     }
 

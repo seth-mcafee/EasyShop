@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\CategoryCollection;
+use App\Http\Resources\CategoryResource;
 use App\Models\Category;
 use Illuminate\Http\Request;
 
@@ -15,7 +17,7 @@ class CategoryController extends Controller
         $categories = Category::all();
 
         return response()->json([
-            "categories" => $categories,
+            "categories" => CategoryCollection::make($categories),
 
         ]);
     }
@@ -26,18 +28,22 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         // Validar los datos recibidos
-        $this->validateCategory($request);
+        $validator = validator()->make($request->all(),["name"=>"required"]);
+
+        if($validator->fails()){
+            return response()->json([
+                "errors"=>$validator->errors()
+            ]);
+        }
 
         // Crear la nueva categoría
-        $category = Category::create([
-            'name' => $request->name,
-            'description' => $request->description,
+       Category::create([
+            'name' => $request->name
         ]);
 
         // Responder con la categoría creada
         return response()->json([
-            'message' => 'Category created successfully!',
-            'category' => $category,
+            'message' => 'Category created successfully!'
         ], 201);
     }
 
@@ -56,7 +62,7 @@ class CategoryController extends Controller
 
         // Responder con los datos de la categoría
         return response()->json([
-            'category' => $category,
+            'category' => CategoryResource::make($category),
         ]);
     }
 
@@ -66,7 +72,13 @@ class CategoryController extends Controller
     public function update(Request $request, string $id)
     {
         // Validar datos recibidos
-        $this->validateCategory($request);
+        $validator = validator()->make($request->all(),["name"=>"required"]);
+
+        if($validator->fails()){
+            return response()->json([
+                "errors"=>$validator->errors()
+            ]);
+        }
 
         // Buscar la categoria por Id
         $category = Category::find($id);
@@ -80,8 +92,7 @@ class CategoryController extends Controller
 
         // Responder con la categoría actualizada
         return response()->json([
-            'message' => 'Category updated successfully!',
-            'category' => $category,
+            'message' => 'Category updated successfully!'
         ]);
     }
 
@@ -105,10 +116,5 @@ class CategoryController extends Controller
         return response()->json(['message' => 'Category deleted successfully!']);
     }
 
-    private function validateCategory(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-        ]);
-    }
+    
 }
