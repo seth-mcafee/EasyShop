@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Address;
 use Illuminate\Http\Request;
+use App\Http\Resources\AddressResource;
 
 class AddressController extends Controller
 {
@@ -11,7 +12,8 @@ class AddressController extends Controller
     public function index()
     {
         $addresses = Address::all();
-        return response()->json($addresses);
+        return AddressResource::collection($addresses);
+        //return response()->json($addresses);
     }
 
     // Crear una nueva dirección
@@ -42,7 +44,8 @@ class AddressController extends Controller
     public function show($id)
     {
         $address = Address::findOrFail($id);
-        return response()->json($address);
+        return new AddressResource($address);
+        //return response()->json($address);
     }
 
     // Actualizar una dirección existente
