@@ -3,6 +3,7 @@
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\AddressController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
@@ -35,6 +36,14 @@ Route::group(["middleware"=> "auth:sanctum"],function(){
     Route::post("/cart", [CartController::class, 'addProduct']);
     Route::post("/cart/remove",[CartController::class,'removeProduct']);
     Route::post("/cart/clear",[CartController::class,'clearAndDelete']);
+
+
+    //addresses
+    Route::get('/addresses', [AddressController::class, 'index']); // Obtener todas las direcciones
+    Route::post('/addresses', [AddressController::class, 'store']); // Crear una nueva dirección
+    Route::get('/addresses/{id}', [AddressController::class, 'show']); // Obtener una dirección específica
+    Route::put('/addresses/{id}', [AddressController::class, 'update']); // Actualizar una dirección
+    Route::delete('/addresses/{id}', [AddressController::class, 'destroy']); // Eliminar una dirección
 });
 
 
