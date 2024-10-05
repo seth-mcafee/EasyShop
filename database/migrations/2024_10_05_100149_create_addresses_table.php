@@ -19,7 +19,7 @@ return new class extends Migration
 
             $table->string("surname");
             $table->string("company")->nullable();
-            $table->string("cif")->nullable();
+            $table->string("vat")->nullable();
 
             $table->string("region");
 
