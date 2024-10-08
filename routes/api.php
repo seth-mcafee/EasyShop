@@ -4,6 +4,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\AddressController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
@@ -43,6 +44,10 @@ Route::group(["middleware"=> "auth:sanctum"],function(){
     Route::get('/addresses/{id}', [AddressController::class, 'show']); // Obtener una dirección específica
     Route::put('/addresses/{id}', [AddressController::class, 'update']); // Actualizar una dirección
     Route::delete('/addresses/{id}', [AddressController::class, 'destroy']); // Eliminar una dirección
+
+
+    //Orders
+    Route::post('/checkout', [OrderController::class, 'checkout']); // CREAR PEDIDO E INICIAR EL PAGO
 });
 
 
