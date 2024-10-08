@@ -41,12 +41,12 @@ class OrderController extends Controller
             "total" => $cart->total
         ]);
 
-        foreach ($cart->products() as $cartProduct) {
+        foreach ($cart->products as $cartProduct) {
             // TODO: validar si hay existencias de ese producto
-            dd($cartProduct);
-            $order->products()->attach($cartProduct->product_id, [
-                "quantity" => $cartProduct->quantity,
-                "price" => $cartProduct->price
+        
+            $order->products()->attach($cartProduct->id, [
+                "quantity" => $cartProduct->pivot->quantity,
+                "price" => $cartProduct->pivot->price
 
             ]);
         }
