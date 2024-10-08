@@ -30,8 +30,7 @@ Route::group(["middleware"=> "auth:sanctum"],function(){
 
     Route::post("/user/logout", [UserController::class, 'logout']);
 
-    //test rutas va mal, cuando cart es vacio y hago get, me sale internal server error
-    // cuando sólo hay 1 producto en el cart, no lo muestra con el resource
+    //test rutas va mal, 
     Route::get("/cart", [CartController::class, 'index']);
     Route::post("/cart", [CartController::class, 'addProduct']);
     Route::post("/cart/remove",[CartController::class,'removeProduct']);

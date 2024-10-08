@@ -11,17 +11,17 @@ class AddressController extends Controller
     
     public function index()
     {
-        $addresses = Address::all();
-        return AddressResource::collection($addresses);
-        //return response()->json($addresses);
+        $user = auth()->user();
+        $addresses = Address::where('user_id',$user->id)->get(); 
+        return response()->json(AddressResource::collection($addresses));
     }
 
     // Crear una nueva dirección
     public function store(Request $request)
     {
+        $user = auth()->user();
         // Validación de los datos
         $validatedData = $request->validate([
-            'user_id' => 'required|integer',
             'name' => 'required|string|max:255',
             'surname' => 'required|string|max:255',
             'company' => 'nullable|string|max:255',
@@ -33,29 +33,40 @@ class AddressController extends Controller
             'phone' => 'required|string|max:20',
             'email' => 'required|string|email|max:255',
         ]);
-
+        $request->request->add(["user_id"=>$user->id]);
         // Crear la dirección en la base de datos
-        $address = Address::create($validatedData);
+        $address = Address::create($request->all());
 
-        return response()->json($address, 201); // Respuesta con estado 201 (creado)
+
+
+        return response()->json(AddressResource::make($address), 201); // Respuesta con estado 201 (creado)
     }
 
     // Mostrar una dirección específica
     public function show($id)
     {
-        $address = Address::findOrFail($id);
-        return new AddressResource($address);
-        //return response()->json($address);
+        $user = auth()->user();
+        $address = Address::where('user_id',$user->id)->where('id',$id)->first();
+        if (!$address) {
+            return response()->json(['message' => 'Address not found'], 404);
+        }
+        return response()->json(AddressResource::make($address));
     }
 
     // Actualizar una dirección existente
     public function update(Request $request, $id)
     {
-        $address = Address::findOrFail($id);
 
+        $user = auth()->user();
+        $address = Address::find($id);
+        if (!$address) {
+            return response()->json(['message' => 'Address not found'], 404);
+        }
+        if($user->id != $address->user_id){
+            return response()->json(['message' => 'User not allowed'], 403);
+        }
         // Validación de los datos
         $validatedData = $request->validate([
-            'user_id' => 'required|integer',
             'name' => 'required|string|max:255',
             'surname' => 'required|string|max:255',
             'company' => 'nullable|string|max:255',
@@ -68,16 +79,26 @@ class AddressController extends Controller
             'email' => 'required|string|email|max:255',
         ]);
 
+        $request->request->add(["user_id"=>$user->id]);
         // Actualizar los datos
-        $address->update($validatedData);
+        $address->update($request->all());
 
-        return response()->json($address);
+        return response()->json(AddressResource::make($address));
     }
 
     // Eliminar una dirección
     public function destroy($id)
     {
-        $address = Address::findOrFail($id);
+
+        $user = auth()->user();
+        $address = Address::find($id);
+        if (!$address) {
+            return response()->json(['message' => 'Address not found'], 404);
+        }
+        if($user->id != $address->user_id){
+            return response()->json(['message' => 'User not allowed'], 403);
+        }
+
         $address->delete();
 
         return response()->json(null, 204); // Respuesta con estado 204 (sin contenido)

@@ -15,7 +15,7 @@ class CartController extends Controller
         $cart = Cart::where('user_id', $user->id)->first();
         return response()->json([
             "status" => true,
-            "data" => CartResource::make($cart)
+            "data" => $cart?CartResource::make($cart):null
         ]);
     }
 
@@ -106,7 +106,7 @@ class CartController extends Controller
             ]);
         }
         if($cartProduct->pivot->quantity <= 1){
-            $cart->products()->detach($cartProduct->product_id);
+            $cart->products()->detach($cartProduct->id);
         }else{
             $newQuantity = $cartProduct->pivot->quantity -1;
             
