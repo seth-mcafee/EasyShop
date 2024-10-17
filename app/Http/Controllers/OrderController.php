@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\OrderResource;
 use App\Models\Address;
 use App\Models\Cart;
 use App\Models\Order;
 use App\Models\OrderAddress;
 use App\Models\Payment;
+use App\Models\Refund;
 use Illuminate\Http\Request;
 use Stripe\PaymentIntent;
 use Stripe\Stripe;
@@ -104,5 +106,38 @@ class OrderController extends Controller
     public function index(){
         $user = auth()->user();
         $orders =Order::where('user_id', $user->id)->get();
+
+        return response()->json(OrderResource::collection($orders));
+    }
+
+    public function refund($id){
+
+        $user = auth()->user();
+
+        $order = Order::where('id', $id)->where('user_id',$user->id)->first();
+
+        if(!$order){
+            return response()->json([
+                "status"=>false,
+                "message"=>"order not found"
+            ]);
+        }
+
+        
+        if($order->status!="delivered" && $order->delivered_at->diffInDays(now())>15){
+            return response()->json([
+                "status"=>false,
+                "message"=>"refund period expired"
+            ]);
+        }
+
+        Refund::create([
+            "order_id" => $order->id
+        ]);
+
+        return response()->json([
+            "status"=>true,
+            "message"=>"Successfull"
+        ]);
     }
 }

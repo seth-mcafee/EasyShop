@@ -48,6 +48,8 @@ Route::group(["middleware"=> "auth:sanctum"],function(){
 
     //Orders
     Route::post('/checkout', [OrderController::class, 'checkout']); // CREAR PEDIDO E INICIAR EL PAGO
+    Route::get('/order',[OrderController::class, 'index']);
+    Route::post('/order/refund/{id}',[OrderController::class, 'refund']);
 });
 
 
